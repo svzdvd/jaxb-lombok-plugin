@@ -22,7 +22,7 @@ public class LombokPlugin extends Plugin  {
     private final Map<String,Command> commands = new HashMap<>();
 
     public LombokPlugin() {
-        defaultCommand = new LombokCommand("Data", Data.class);
+        defaultCommand = new LombokCommand("Data", Getter.class, Setter.class, EqualsAndHashCode.class, ToString.class);
 
         addCommand(defaultCommand);
         addLombokCommand("Getter", Getter.class);
@@ -30,8 +30,17 @@ public class LombokPlugin extends Plugin  {
         addLombokCommand("GetterSetter", Getter.class, Setter.class);
         addLombokCommand("ToString", ToString.class);
         addLombokCommand("EqualsAndHashCode", EqualsAndHashCode.class);
+        addLombokCommand("NoArgsConstructor", NoArgsConstructor.class);
         addLombokCommand("AllArgsConstructor", AllArgsConstructor.class);
-        addLombokCommand("Builder", Builder.class);
+
+        addCommand(new LombokCommand("Builder", Builder.class) {
+            @Override
+            public void editGeneratedClass(JDefinedClass generatedClass) {
+                generatedClass.annotate(NoArgsConstructor.class);
+                generatedClass.annotate(AllArgsConstructor.class);
+                generatedClass.annotate(Builder.class).param("builderMethodName", "builderFor" + generatedClass.name());
+            }
+        });
 
         addCommand(new Command("removeGeneratedSourceSetters", "remove Setters from JAXB generated sources") {
             @Override
@@ -75,21 +84,28 @@ public class LombokPlugin extends Plugin  {
         return 0;
     }
 
+    private boolean isAbstractClass(JDefinedClass generatedClass) {
+        return generatedClass.isAbstract() || generatedClass.isInterface() || generatedClass.isAnonymous();
+    }
+
     @Override
     public boolean run(Outline outline, Options options, ErrorHandler errorHandler) {
         // for each generated classes
-        for (ClassOutline classOutline : outline.getClasses()) {
-
-            boolean commandExecuted = false;
-            for (Command command : commands.values()) {
-                if (command.isEnabled()) {
-                    command.editGeneratedClass(classOutline.implClass);
-                    commandExecuted = true;
+        for (ClassOutline generatedClassOutline : outline.getClasses()) {
+            JDefinedClass generatedClass = generatedClassOutline.implClass;
+            if (!isAbstractClass(generatedClass) &&
+                    !generatedClass.fields().isEmpty()) {
+                boolean commandExecuted = false;
+                for (Command command : commands.values()) {
+                    if (command.isEnabled()) {
+                        command.editGeneratedClass(generatedClass);
+                        commandExecuted = true;
+                    }
                 }
-            }
 
-            if (!commandExecuted) {
-                defaultCommand.editGeneratedClass(classOutline.implClass);
+                if (!commandExecuted) {
+                    defaultCommand.editGeneratedClass(generatedClass);
+                }
             }
         }
         return true;
