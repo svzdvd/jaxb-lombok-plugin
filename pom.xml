@@ -4,6 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <groupId>it.yobibit</groupId>
     <artifactId>jaxb-lombok-plugin</artifactId>
     <version>1.0.0</version>
@@ -30,7 +34,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.8</version>
+            <version>1.16.18</version>
         </dependency>
         <!-- Test dependencies -->
         <dependency>
@@ -85,7 +89,7 @@
                     <plugin>
                         <groupId>org.apache.cxf</groupId>
                         <artifactId>cxf-codegen-plugin</artifactId>
-                        <version>3.0.3</version>
+                        <version>3.1.12</version>
                         <executions>
                             <execution>
                                 <phase>generate-test-sources</phase>
