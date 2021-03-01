@@ -11,6 +11,15 @@
     <groupId>it.yobibit</groupId>
     <artifactId>jaxb-lombok-plugin</artifactId>
     <version>1.0.0</version>
+         
+    <distributionManagement>
+         <repository>
+             <id>github</id>
+             <name>GitHub Davide Savazzi Apache Maven Packages</name>
+             <url>https://maven.pkg.github.com/svzdvd/jaxb-lombok-plugin</url>
+         </repository>
+    </distributionManagement>
+         
     <build>
         <plugins>
             <plugin>
