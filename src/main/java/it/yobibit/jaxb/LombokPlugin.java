@@ -7,6 +7,8 @@ import com.sun.tools.xjc.Plugin;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import org.xml.sax.ErrorHandler;
 
 import java.util.ArrayList;
@@ -39,6 +41,15 @@ public class LombokPlugin extends Plugin  {
                 generatedClass.annotate(NoArgsConstructor.class);
                 generatedClass.annotate(AllArgsConstructor.class);
                 generatedClass.annotate(Builder.class).param("builderMethodName", "builderFor" + generatedClass.name());
+            }
+        });
+
+        addCommand(new LombokCommand("SuperBuilder", SuperBuilder.class) {
+            @Override
+            public void editGeneratedClass(JDefinedClass generatedClass) {
+                generatedClass.annotate(NoArgsConstructor.class);
+                generatedClass.annotate(AllArgsConstructor.class);
+                generatedClass.annotate(SuperBuilder.class).param("builderMethodName", "builderFor" + generatedClass.name());
             }
         });
 
